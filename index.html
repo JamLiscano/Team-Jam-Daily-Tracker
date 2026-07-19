@@ -509,6 +509,14 @@ function showToast(msg){
 function agentFormUrl(){
   let u=new URL(location.href);u.searchParams.set('view','agent');
   if(cloudEnabled())u.searchParams.set('api',getApiUrl());
+  // Isama ang branding sa link para lumabas sa agent form kahit ibang device
+  if(settings.kpiName)u.searchParams.set('bn',settings.kpiName);
+  if(settings.kpiSubtitle)u.searchParams.set('bs',settings.kpiSubtitle);
+  if(settings.primaryColor)u.searchParams.set('c1',settings.primaryColor);
+  if(settings.secondaryColor)u.searchParams.set('c2',settings.secondaryColor);
+  if(settings.accentColor)u.searchParams.set('c3',settings.accentColor);
+  if(settings.actionColor)u.searchParams.set('c4',settings.actionColor);
+  if(settings.logoData)u.searchParams.set('lg',settings.logoData);
   u.hash='';return u.toString();
 }
 function copyAgentLink(){
@@ -570,7 +578,15 @@ async function downloadScreenshot(){
   }catch(e){showToast('⚠ Hindi makuha ang screenshot.')}
 }
 
+function applyUrlBranding(){
+  // Kunin ang branding galing sa link (agent form view lang) — in-memory, hindi sini-save
+  let p=new URLSearchParams(location.search);
+  if(p.get('view')!=='agent')return;
+  let map={bn:'kpiName',bs:'kpiSubtitle',c1:'primaryColor',c2:'secondaryColor',c3:'accentColor',c4:'actionColor',lg:'logoData'};
+  for(let k in map){let v=p.get(k);if(v)settings[map[k]]=v;}
+}
 function init(){
+  applyUrlBranding();
   seedDates();loadSettingsToForm();applyBranding();renderAll();
   if(new URLSearchParams(location.search).get('view')==='agent'){
     document.body.classList.add('agent-mode');
