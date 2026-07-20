@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TEAM JOSH KPI Monitoring v1.3</title>
+<title>TEAM JAM KPI Monitoring v1.3</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
@@ -88,7 +88,7 @@ body.agent-mode #agentPortal{display:block}
 <aside class="sidebar">
   <div class="brand">
     <img id="brandLogo" alt="KPI Logo">
-    <span id="brandName">TEAM JOSH KPI</span>
+    <span id="brandName">TEAM JAM KPI</span>
     <small id="brandSubtitle">KPI MONITORING SYSTEM</small>
   </div>
   <div class="nav">
@@ -196,7 +196,7 @@ body.agent-mode #agentPortal{display:block}
     <div class="card">
       <div class="notice">Cloudflare hosts this HTML and Supabase stores the shared data. Existing browser data is merged into Supabase and is not erased.</div>
       <div class="grid">
-        <div><label>KPI App Name<input id="kpiName" placeholder="TEAM JOSH KPI"></label></div>
+        <div><label>KPI App Name<input id="kpiName" placeholder="TEAM JAM KPI"></label></div>
         <div><label>KPI Subtitle<input id="kpiSubtitle" placeholder="KPI MONITORING SYSTEM"></label></div>
         <div><label>Logo Image<input type="file" id="logoUpload" accept="image/*" onchange="previewLogo(event)"></label></div>
         <div><label>Primary Color<input type="color" id="primaryColor" value="#006d78" oninput="previewBranding()"></label></div>
@@ -221,7 +221,7 @@ body.agent-mode #agentPortal{display:block}
   <div class="portal-wrap">
     <div class="portal-brand">
       <img id="portalLogo" alt="Team Logo">
-      <h1 id="portalTitle">TEAM JOSH</h1>
+      <h1 id="portalTitle">TEAM JAM</h1>
       <p>Activity Tracker</p>
     </div>
 
@@ -286,9 +286,9 @@ function getSupabaseKey(){
 function supabaseEnabled(){return /^https:\/\//.test(getSupabaseUrl())&&getSupabaseKey().length>20}
 function cloudEnabled(){return supabaseEnabled()}
 
-const KEYS={records:'TJ_KPI_STANDALONE_RECORDS_V1',activities:'TJ_KPI_STANDALONE_ACTIVITIES_V1',settings:'TJ_KPI_STANDALONE_SETTINGS_V1',agents:'TJ_KPI_STANDALONE_AGENTS_V1'};
+const KEYS={records:'TJ_KPI_JAM_RECORDS_V1',activities:'TJ_KPI_JAM_ACTIVITIES_V1',settings:'TJ_KPI_JAM_SETTINGS_V1',agents:'TJ_KPI_JAM_AGENTS_V1'};
 const defaultActivities=[['Client Servicing',10],['Prospecting',1],['Client Presentation',50],['Selling Approach',1],['Recruitment',10],['Closing',100],['Training',5],['Branding',1],['Engage',1],['Setting Appointment',10]];
-let records=read(KEYS.records,[]),activities=read(KEYS.activities,defaultActivities.map(x=>({name:x[0],points:x[1]}))),settings=read(KEYS.settings,{baseTarget:150,kpiName:'TEAM JOSH KPI',kpiSubtitle:'KPI MONITORING SYSTEM',primaryColor:'#006d78',secondaryColor:'#10aebe',accentColor:'#dff7fa',actionColor:'#008896',logoData:'',supabaseUrl:DEFAULT_SUPABASE_URL,supabaseAnonKey:DEFAULT_SUPABASE_KEY}),agentList=read(KEYS.agents,TEAM_AGENTS.slice());
+let records=read(KEYS.records,[]),activities=read(KEYS.activities,defaultActivities.map(x=>({name:x[0],points:x[1]}))),settings=read(KEYS.settings,{baseTarget:150,kpiName:'TEAM JAM KPI',kpiSubtitle:'KPI MONITORING SYSTEM',primaryColor:'#006d78',secondaryColor:'#10aebe',accentColor:'#dff7fa',actionColor:'#008896',logoData:'',supabaseUrl:DEFAULT_SUPABASE_URL,supabaseAnonKey:DEFAULT_SUPABASE_KEY}),agentList=read(KEYS.agents,TEAM_AGENTS.slice());
 let charts={};
 function read(k,f){try{return JSON.parse(localStorage.getItem(k))??f}catch(e){return f}}function write(k,v){localStorage.setItem(k,JSON.stringify(v))}
 function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
@@ -365,14 +365,14 @@ function renderActivities(){activityRows.innerHTML=activities.map((a,i)=>`<tr><t
 function editActivity(i,k,v){activities[i][k]=k==='points'?Number(v):v.trim();write(KEYS.activities,activities);if(supabaseEnabled())supabaseWrite({records,agents:agentList,activities,settings:{...settings,supabaseAnonKey:''}}).catch(console.warn);renderSelectors()}
 function removeActivity(i){if(confirm('Delete this activity? Existing records will stay unchanged.')){activities.splice(i,1);write(KEYS.activities,activities);if(supabaseEnabled())supabaseWrite({records,agents:agentList,activities,settings:{...settings,supabaseAnonKey:''}}).catch(console.warn);renderAll()}}
 function renderReports(){let s=dashStart.value,e=dashEnd.value,rows=filterRows(s,e,'');let groups={};rows.forEach(r=>(groups[r.agent]??=[]).push(r));let list=Object.entries(groups).map(([agent,rs])=>{let points=rs.reduce((t,r)=>t+Number(r.points||0),0),days=uniqueDays(rs),target=days*Number(settings.baseTarget||150),pct=target?points/target*100:0;return{agent,points,days,target,pct,level:calcLevel(pct)}}).sort((a,b)=>b.pct-a.pct);reportRows.innerHTML=list.map((x,i)=>`<tr><td>${i+1}</td><td>${esc(x.agent)}</td><td>${x.points}</td><td>${x.days}</td><td>${x.target}</td><td>${x.pct.toFixed(1)}%</td><td><span class="badge ${x.level.cls}">${x.level.name}</span></td></tr>`).join('')}
-function exportCsv(){let csv=Papa.unparse(records);downloadBlob(csv,'TEAM_JOSH_KPI_RECORDS.csv','text/csv')}
+function exportCsv(){let csv=Papa.unparse(records);downloadBlob(csv,'TEAM_JAM_KPI_RECORDS.csv','text/csv')}
 function downloadBlob(data,name,type){let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
 function applyBranding(){
   document.documentElement.style.setProperty('--navy',settings.primaryColor||'#006d78');
   document.documentElement.style.setProperty('--navy2',settings.secondaryColor||'#10aebe');
   document.documentElement.style.setProperty('--gold',settings.accentColor||'#dff7fa');
   document.documentElement.style.setProperty('--red',settings.actionColor||'#008896');
-  const appName=settings.kpiName||'TEAM JOSH KPI';
+  const appName=settings.kpiName||'TEAM JAM KPI';
   const subtitle=settings.kpiSubtitle||'KPI MONITORING SYSTEM';
   brandName.textContent=appName;
   brandSubtitle.textContent=subtitle;
@@ -407,7 +407,7 @@ function previewLogo(ev){
   reader.readAsDataURL(file);
 }
 async function saveSettings(){
-  settings={...settings,baseTarget:Number(baseTarget.value||150),kpiName:kpiName.value.trim()||'TEAM JOSH KPI',kpiSubtitle:kpiSubtitle.value.trim()||'KPI MONITORING SYSTEM',primaryColor:primaryColor.value,secondaryColor:secondaryColor.value,accentColor:accentColor.value,actionColor:actionColor.value,challengeStart:challengeStart.value||'',challengeEnd:challengeEnd.value||'',supabaseUrl:supabaseUrl.value.trim()||DEFAULT_SUPABASE_URL,supabaseAnonKey:supabaseAnonKey.value.trim()||DEFAULT_SUPABASE_KEY};
+  settings={...settings,baseTarget:Number(baseTarget.value||150),kpiName:kpiName.value.trim()||'TEAM JAM KPI',kpiSubtitle:kpiSubtitle.value.trim()||'KPI MONITORING SYSTEM',primaryColor:primaryColor.value,secondaryColor:secondaryColor.value,accentColor:accentColor.value,actionColor:actionColor.value,challengeStart:challengeStart.value||'',challengeEnd:challengeEnd.value||'',supabaseUrl:supabaseUrl.value.trim()||DEFAULT_SUPABASE_URL,supabaseAnonKey:supabaseAnonKey.value.trim()||DEFAULT_SUPABASE_KEY};
   write(KEYS.settings,settings);
   applyBranding();renderAll();
   if(document.body.classList.contains('agent-mode'))renderAgentForm();
@@ -429,15 +429,15 @@ async function saveSettings(){
   }
 }
 function resetBranding(){
-  settings={...settings,kpiName:'TEAM JOSH KPI',kpiSubtitle:'KPI MONITORING SYSTEM',primaryColor:'#006d78',secondaryColor:'#10aebe',accentColor:'#dff7fa',actionColor:'#008896',logoData:''};
+  settings={...settings,kpiName:'TEAM JAM KPI',kpiSubtitle:'KPI MONITORING SYSTEM',primaryColor:'#006d78',secondaryColor:'#10aebe',accentColor:'#dff7fa',actionColor:'#008896',logoData:''};
   write(KEYS.settings,settings);loadSettingsToForm();applyBranding();if(cloudEnabled())cloudLoad();
 }
 function loadSettingsToForm(){
-  baseTarget.value=settings.baseTarget||150;supabaseUrl.value=settings.supabaseUrl||DEFAULT_SUPABASE_URL;supabaseAnonKey.value=settings.supabaseAnonKey||DEFAULT_SUPABASE_KEY;challengeStart.value=settings.challengeStart||'';challengeEnd.value=settings.challengeEnd||'';kpiName.value=settings.kpiName||'TEAM JOSH KPI';kpiSubtitle.value=settings.kpiSubtitle||'KPI MONITORING SYSTEM';primaryColor.value=settings.primaryColor||'#006d78';secondaryColor.value=settings.secondaryColor||'#10aebe';accentColor.value=settings.accentColor||'#dff7fa';actionColor.value=settings.actionColor||'#008896';
+  baseTarget.value=settings.baseTarget||150;supabaseUrl.value=settings.supabaseUrl||DEFAULT_SUPABASE_URL;supabaseAnonKey.value=settings.supabaseAnonKey||DEFAULT_SUPABASE_KEY;challengeStart.value=settings.challengeStart||'';challengeEnd.value=settings.challengeEnd||'';kpiName.value=settings.kpiName||'TEAM JAM KPI';kpiSubtitle.value=settings.kpiSubtitle||'KPI MONITORING SYSTEM';primaryColor.value=settings.primaryColor||'#006d78';secondaryColor.value=settings.secondaryColor||'#10aebe';accentColor.value=settings.accentColor||'#dff7fa';actionColor.value=settings.actionColor||'#008896';
 }
 function copyMessage(){navigator.clipboard.writeText(agentMessage.value).then(()=>alert('Message copied.'))}
 async function downloadScorecardPdf(){let el=document.getElementById('scoreCapture'),canvas=await html2canvas(el,{scale:2,useCORS:true}),img=canvas.toDataURL('image/png'),{jsPDF}=window.jspdf,pdf=new jsPDF('p','mm','a4'),w=190,h=canvas.height*w/canvas.width;pdf.addImage(img,'PNG',10,10,w,h);pdf.save((scoreAgent.value||'AGENT')+'_KPI_SCORECARD.pdf')}
-async function downloadDashboardPdf(){let el=document.getElementById('dashboard'),canvas=await html2canvas(el,{scale:2,useCORS:true}),img=canvas.toDataURL('image/png'),{jsPDF}=window.jspdf,pdf=new jsPDF('p','mm','a4'),w=190,h=canvas.height*w/canvas.width;pdf.addImage(img,'PNG',10,10,w,h);pdf.save('TEAM_JOSH_KPI_DASHBOARD.pdf')}
+async function downloadDashboardPdf(){let el=document.getElementById('dashboard'),canvas=await html2canvas(el,{scale:2,useCORS:true}),img=canvas.toDataURL('image/png'),{jsPDF}=window.jspdf,pdf=new jsPDF('p','mm','a4'),w=190,h=canvas.height*w/canvas.width;pdf.addImage(img,'PNG',10,10,w,h);pdf.save('TEAM_JAM_KPI_DASHBOARD.pdf')}
 /* ===== AGENT ENTRY FORM ===== */
 function challengeRange(){
   // Use saved challenge range; default = current week (Mon-Sun)
@@ -450,7 +450,7 @@ function challengeRange(){
 }
 function renderAgentForm(){
   // Branding
-  portalTitle.textContent=settings.kpiName||'TEAM JOSH';
+  portalTitle.textContent=settings.kpiName||'TEAM JAM';
   const portalSub=document.querySelector('.portal-brand p');if(portalSub)portalSub.textContent=settings.kpiSubtitle||'KPI MONITORING SYSTEM';
   if(settings.logoData){portalLogo.src=settings.logoData;portalLogo.style.display='block'}else{portalLogo.removeAttribute('src');portalLogo.style.display='none'}
   // Name dropdown mula sa agentList (galing sa Supabase)
@@ -591,12 +591,12 @@ function mergeRecords(...lists){
 function mergeAgents(...lists){const m=new Map();lists.flat().filter(Boolean).forEach(a=>{a=String(a||'').trim();if(a&&!m.has(norm(a)))m.set(norm(a),a)});return [...m.values()].sort()}
 function sbHeaders(extra={}){return {'apikey':getSupabaseKey(),'Authorization':'Bearer '+getSupabaseKey(),'Content-Type':'application/json',...extra}}
 async function supabaseRead(){
-  let res=await fetch(getSupabaseUrl()+'/rest/v1/app_state?id=eq.team_josh_kpi&select=payload',{headers:sbHeaders()});
+  let res=await fetch(getSupabaseUrl()+'/rest/v1/app_state?id=eq.team_jam_kpi&select=payload',{headers:sbHeaders()});
   if(!res.ok)throw new Error('Supabase read '+res.status);
   let rows=await res.json();return rows[0]?.payload||{};
 }
 async function supabaseWrite(state){
-  let body={id:'team_josh_kpi',payload:state,updated_at:new Date().toISOString()};
+  let body={id:'team_jam_kpi',payload:state,updated_at:new Date().toISOString()};
   let res=await fetch(getSupabaseUrl()+'/rest/v1/app_state?on_conflict=id',{method:'POST',headers:sbHeaders({'Prefer':'resolution=merge-duplicates,return=minimal'}),body:JSON.stringify(body)});
   if(!res.ok)throw new Error('Supabase save '+res.status+': '+await res.text());
   return {ok:true};
@@ -652,7 +652,7 @@ async function downloadScreenshot(){
   try{
     let canvas=await html2canvas(target,{scale:2,useCORS:true,backgroundColor:'#f2fbfc',windowWidth:Math.max(1200,target.scrollWidth)});
     let a=document.createElement('a');
-    a.download='team-josh-dashboard-'+new Date().toISOString().slice(0,10)+'.png';
+    a.download='team-jam-dashboard-'+new Date().toISOString().slice(0,10)+'.png';
     a.href=canvas.toDataURL('image/png');
     a.click();
     showToast('✓ Na-save ang screenshot!');
